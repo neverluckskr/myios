@@ -26,6 +26,9 @@ struct DocumentsScreen: View {
             .safeAreaPadding(.horizontal, 2 * DiiaLayout.cardInteritemSpacing)
             .coordinateSpace(.named(carouselSpace))
             .frame(height: DiiaLayout.cardHeight)
+            // A flipping card grows past the scroll bounds; without this it gets
+            // sliced off along the top and bottom edges.
+            .scrollClipDisabled()
 
             pageDots
         }
@@ -47,7 +50,9 @@ struct DocumentsScreen: View {
         .onTapGesture {
             flippedID = flippedID == document.id ? nil : document.id
         }
-        .animation(.easeInOut(duration: 0.4), value: flippedID)
+        // Keep the flipping card above its neighbours as it swings out.
+        .zIndex(flippedID == document.id ? 1 : 0)
+        .animation(.spring(duration: 0.55, bounce: 0.25), value: flippedID)
         .animation(.easeInOut(duration: 0.3), value: currentID)
     }
 

@@ -32,7 +32,6 @@ struct DiiaDocumentCard: View {
         .frame(width: DiiaLayout.cardWidth, height: DiiaLayout.cardHeight, alignment: .top)
         .background(Color.white.opacity(0.4))
         .clipShape(RoundedRectangle(cornerRadius: DiiaLayout.cardCornerRadius, style: .continuous))
-        .shadow(color: .white, radius: 23 / 2, y: 8)
     }
 
     private var twoColumns: some View {

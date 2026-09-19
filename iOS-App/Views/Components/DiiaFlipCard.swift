@@ -24,7 +24,7 @@ struct DiiaFlipCard<Front: View, Back: View>: View, Animatable {
         .rotation3DEffect(
             .degrees(progress * 180),
             axis: (x: 0, y: 1, z: 0),
-            perspective: 0.4
+            perspective: 0.55
         )
     }
 }
