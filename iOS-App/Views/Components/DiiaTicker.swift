@@ -10,9 +10,11 @@ struct DiiaTicker: View {
 
     private var segment: String { text + "    " }
 
-    /// Diia scrolls one full text width in `text.count / 10` seconds.
+    /// Roughly two and a half characters a second.
+    private static let charactersPerSecond: Double = 2.5
+
     private var secondsPerSegment: Double {
-        max(Double(segment.count) / 10, 1)
+        max(Double(segment.count) / Self.charactersPerSecond, 1)
     }
 
     private var segmentWidth: CGFloat {
