@@ -19,21 +19,21 @@ enum DiiaTab: Int, CaseIterable {
 
     var iconName: String {
         switch self {
-        case .feed: "newspaper"
-        case .documents: "doc.text"
-        case .diiaAI: "sparkles"
-        case .services: "square.grid.2x2"
-        case .menu: "line.3.horizontal"
+        case .feed: "menuFeedInactive"
+        case .documents: "menuDocumentsInactive"
+        case .diiaAI: "menuServicesInactive"
+        case .services: "menuServicesInactive"
+        case .menu: "menuSettingsInactive"
         }
     }
 
     var selectedIconName: String {
         switch self {
-        case .feed: "newspaper.fill"
-        case .documents: "doc.text.fill"
-        case .diiaAI: "sparkles"
-        case .services: "square.grid.2x2.fill"
-        case .menu: "line.3.horizontal"
+        case .feed: "menuFeedActive"
+        case .documents: "menuDocumentsActive"
+        case .diiaAI: "menuServicesActive"
+        case .services: "menuServicesActive"
+        case .menu: "menuSettingsActive"
         }
     }
 }
