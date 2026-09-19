@@ -6,6 +6,18 @@ struct DiiaDocumentField: Codable, Identifiable, Equatable {
     var value: String
 }
 
+/// Extra data shown only on the full-information sheet. Everything here is
+/// additional to the card — the card's own fields are reused, not repeated.
+struct DiiaDocumentDetails: Codable, Equatable {
+    var latinName: String
+    var sex: String
+    var sexLatin: String
+    var taxNumber: String
+    var identityDocument: String
+    var identityDocumentNumber: String
+    var residence: String
+}
+
 struct DiiaDocument: Codable, Identifiable, Equatable {
     var id = UUID()
     var title: String
@@ -15,6 +27,7 @@ struct DiiaDocument: Codable, Identifiable, Equatable {
     var photoData: Data?
     /// Encoded on the back of the card. Falls back to a generated link when empty.
     var qrPayload: String?
+    var details: DiiaDocumentDetails?
 
     static let wartimeTicker = """
         Документ діє під час воєнного стану. \
@@ -32,7 +45,16 @@ struct DiiaDocument: Codable, Identifiable, Equatable {
             fields: [
                 DiiaDocumentField(label: "Дата народження:", value: "09.03.1814"),
                 DiiaDocumentField(label: "РНОКПП:", value: "1234567890")
-            ]
+            ],
+            details: DiiaDocumentDetails(
+                latinName: "SHEVCHENKO TARAS",
+                sex: "Ч",
+                sexLatin: "M",
+                taxNumber: "1234567890",
+                identityDocument: "Паспорт громадянина України",
+                identityDocumentNumber: "001234567",
+                residence: "UA, обл. Київська обл., м. Київ, вул./просп. вул. Хрещатик, буд. 1, кв. 1"
+            )
         ),
         DiiaDocument(
             title: "Паспорт громадянина України",

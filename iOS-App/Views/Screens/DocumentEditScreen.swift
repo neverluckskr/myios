@@ -13,6 +13,17 @@ struct DocumentEditScreen: View {
         _draft = State(initialValue: document)
     }
 
+    private func detailField(
+        _ title: String,
+        _ path: WritableKeyPath<DiiaDocumentDetails, String>,
+        multiline: Bool = false
+    ) -> some View {
+        TextField(title, text: Binding(
+            get: { draft.details?[keyPath: path] ?? "" },
+            set: { draft.details?[keyPath: path] = $0 }
+        ), axis: multiline ? .vertical : .horizontal)
+    }
+
     var body: some View {
         Form {
             Section("Документ") {
@@ -37,6 +48,18 @@ struct DocumentEditScreen: View {
 
                 Button("Додати поле") {
                     draft.fields.append(DiiaDocumentField(label: "", value: ""))
+                }
+            }
+
+            if draft.details != nil {
+                Section("Повна інформація") {
+                    detailField("ПІБ латиницею", \.latinName)
+                    detailField("Стать", \.sex)
+                    detailField("Стать латиницею", \.sexLatin)
+                    detailField("РНОКПП (ІПН)", \.taxNumber)
+                    detailField("Документ, що посвідчує особу", \.identityDocument)
+                    detailField("Номер документа", \.identityDocumentNumber)
+                    detailField("Місце проживання", \.residence, multiline: true)
                 }
             }
 

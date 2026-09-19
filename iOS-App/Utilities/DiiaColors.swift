@@ -9,6 +9,12 @@ enum DiiaColors {
     // RGB(243, 190, 129) alpha 0.68
     static let gradientOrange = Color(red: 243.0 / 255.0, green: 190.0 / 255.0, blue: 129.0 / 255.0)
 
+    // Source: DocumentDetailsCommonViewController.Constants.backgroundColor
+    static let detailsBackground = Color(red: 0xF1 / 255, green: 0xF6 / 255, blue: 0xF6 / 255)
+
+    // Source: AppConstants.swift → black540
+    static let secondaryText = Color.black.opacity(0.54)
+
     // Source: AppConstants.swift → Colors.black = "#000000"
     static let tabBarBackground = Color.black
 

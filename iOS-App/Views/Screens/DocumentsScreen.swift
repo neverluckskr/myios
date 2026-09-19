@@ -9,6 +9,7 @@ struct DocumentsScreen: View {
     @State private var flippedID: UUID?
     @State private var menuID: UUID?
     @State private var isReordering = false
+    @State private var detailsDocument: DiiaDocument?
 
     private var documents: [DiiaDocument] { store.documents }
 
@@ -37,6 +38,10 @@ struct DocumentsScreen: View {
         }
         .fullScreenCover(isPresented: $isReordering) {
             DocumentsReorderScreen().environment(store)
+        }
+        .sheet(item: $detailsDocument) { document in
+            DocumentDetailsScreen(document: document)
+                .presentationDragIndicator(.visible)
         }
     }
 
@@ -92,7 +97,9 @@ struct DocumentsScreen: View {
 
         return [
             [
-                DiiaAction(title: "Повна інформація", icon: "DS_docInfo"),
+                DiiaAction(title: "Повна інформація", icon: "DS_docInfo") {
+                    detailsDocument = documents.first { $0.id == target }
+                },
                 DiiaAction(title: "Код для перевірки", icon: "DS_qr") {
                     flippedID = target
                 }
