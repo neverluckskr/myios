@@ -24,7 +24,7 @@ struct ContentView: View {
     private var screen: some View {
         switch selectedTab {
         case .documents:
-            DocumentsScreen(documents: store.documents)
+            DocumentsScreen()
         case .menu:
             MenuScreen()
         default:

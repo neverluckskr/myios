@@ -3,12 +3,44 @@ import SwiftUI
 private let carouselSpace = "diia.carousel"
 
 struct DocumentsScreen: View {
-    let documents: [DiiaDocument]
+    @Environment(DocumentStore.self) private var store
 
     @State private var currentID: UUID?
     @State private var flippedID: UUID?
+    @State private var menuID: UUID?
+    @State private var isReordering = false
+
+    private var documents: [DiiaDocument] { store.documents }
 
     var body: some View {
+        ZStack {
+            carousel
+                .blur(radius: menuID == nil ? 0 : 12)
+                .disabled(menuID != nil)
+
+            if menuID != nil {
+                Color.black.opacity(0.15)
+                    .ignoresSafeArea()
+                    .onTapGesture { menuID = nil }
+                    .transition(.opacity)
+
+                DiiaActionSheet(groups: menuGroups, onClose: { menuID = nil })
+                    .transition(.move(edge: .bottom))
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: menuID)
+        .onAppear {
+            if currentID == nil { currentID = documents.first?.id }
+        }
+        .onChange(of: currentID) { _, _ in
+            flippedID = nil
+        }
+        .fullScreenCover(isPresented: $isReordering) {
+            DocumentsReorderScreen().environment(store)
+        }
+    }
+
+    private var carousel: some View {
         VStack(spacing: 16) {
             ScrollView(.horizontal) {
                 LazyHStack(spacing: DiiaLayout.cardInteritemSpacing) {
@@ -32,17 +64,15 @@ struct DocumentsScreen: View {
 
             pageDots
         }
-        .onAppear {
-            if currentID == nil { currentID = documents.first?.id }
-        }
-        .onChange(of: currentID) { _, _ in
-            flippedID = nil
-        }
     }
 
     private func card(for document: DiiaDocument) -> some View {
         DiiaFlipCard(progress: flippedID == document.id ? 1 : 0) {
-            DiiaDocumentCard(document: document, contentVisible: document.id == currentID)
+            DiiaDocumentCard(
+                document: document,
+                contentVisible: document.id == currentID,
+                onMoreTapped: { menuID = document.id }
+            )
         } back: {
             DiiaDocumentCardBack(document: document)
         }
@@ -54,6 +84,27 @@ struct DocumentsScreen: View {
         .zIndex(flippedID == document.id ? 1 : 0)
         .animation(.spring(duration: 0.55, bounce: 0.25), value: flippedID)
         .animation(.easeInOut(duration: 0.3), value: currentID)
+    }
+
+    private var menuGroups: [[DiiaAction]] {
+        // Captured now: the sheet clears menuID before running a handler.
+        let target = menuID
+
+        return [
+            [
+                DiiaAction(title: "Повна інформація", icon: "DS_docInfo"),
+                DiiaAction(title: "Код для перевірки", icon: "DS_qr") {
+                    flippedID = target
+                }
+            ],
+            [
+                DiiaAction(title: "Змінити порядок документів", icon: "DS_reorder") {
+                    isReordering = true
+                },
+                DiiaAction(title: "Оцінити документ", icon: "DS_rating"),
+                DiiaAction(title: "Питання та відповіді", icon: "DS_faq")
+            ]
+        ]
     }
 
     private var pageDots: some View {
@@ -93,6 +144,6 @@ private extension View {
 #Preview {
     ZStack {
         DiiaGradientBackground().ignoresSafeArea()
-        DocumentsScreen(documents: DiiaDocument.mocks)
+        DocumentsScreen().environment(DocumentStore())
     }
 }

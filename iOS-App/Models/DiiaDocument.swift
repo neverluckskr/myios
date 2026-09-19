@@ -15,8 +15,6 @@ struct DiiaDocument: Codable, Identifiable, Equatable {
     var photoData: Data?
     /// Encoded on the back of the card. Falls back to a generated link when empty.
     var qrPayload: String?
-    /// Code 128 accepts ASCII only; digits keep it readable under the barcode.
-    var barcodeValue: String?
 
     static let wartimeTicker = """
         Документ діє під час воєнного стану. \

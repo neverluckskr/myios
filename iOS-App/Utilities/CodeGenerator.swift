@@ -14,15 +14,6 @@ enum CodeGenerator {
         }
     }
 
-    static func barcode(from string: String) -> UIImage? {
-        render(key: "barcode:" + string) {
-            let filter = CIFilter.code128BarcodeGenerator()
-            filter.message = Data(string.utf8)
-            filter.quietSpace = 3
-            return filter.outputImage
-        }
-    }
-
     private static func render(key: String, _ make: () -> CIImage?) -> UIImage? {
         if let cached = cache[key] { return cached }
 
