@@ -44,6 +44,8 @@ struct DiiaDocumentCard: View {
                         Text(field.label)
                             .font(DiiaFont.usual)
                             .foregroundStyle(.black)
+                            .frame(width: DiiaLayout.fieldLabelWidth, alignment: .leading)
+
                         Text(field.value)
                             .font(DiiaFont.usual)
                             .foregroundStyle(.black)

@@ -7,6 +7,11 @@ enum DiiaTab: Int, CaseIterable {
     case services
     case menu
 
+    enum Icon {
+        case asset(String)
+        case symbol(String)
+    }
+
     var title: String {
         switch self {
         case .feed: "Стрічка"
@@ -17,23 +22,14 @@ enum DiiaTab: Int, CaseIterable {
         }
     }
 
-    var iconName: String {
+    /// The AI tab postdates the open-source release, so it has no bundled icon.
+    func icon(selected: Bool) -> Icon {
         switch self {
-        case .feed: "menuFeedInactive"
-        case .documents: "menuDocumentsInactive"
-        case .diiaAI: "menuServicesInactive"
-        case .services: "menuServicesInactive"
-        case .menu: "menuSettingsInactive"
-        }
-    }
-
-    var selectedIconName: String {
-        switch self {
-        case .feed: "menuFeedActive"
-        case .documents: "menuDocumentsActive"
-        case .diiaAI: "menuServicesActive"
-        case .services: "menuServicesActive"
-        case .menu: "menuSettingsActive"
+        case .feed: .asset(selected ? "menuFeedActive" : "menuFeedInactive")
+        case .documents: .asset(selected ? "menuDocumentsActive" : "menuDocumentsInactive")
+        case .diiaAI: .symbol("sparkle")
+        case .services: .asset(selected ? "menuServicesActive" : "menuServicesInactive")
+        case .menu: .asset(selected ? "menuSettingsActive" : "menuSettingsInactive")
         }
     }
 }

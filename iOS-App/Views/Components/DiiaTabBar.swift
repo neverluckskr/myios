@@ -14,14 +14,13 @@ struct DiiaTabBar: View {
     }
 
     private func tabItem(_ tab: DiiaTab) -> some View {
-        Button {
+        let isSelected = selectedTab == tab
+
+        return Button {
             selectedTab = tab
         } label: {
             VStack(spacing: 3) {
-                Image(selectedTab == tab ? tab.selectedIconName : tab.iconName)
-                    .renderingMode(.original)
-                    .resizable()
-                    .scaledToFit()
+                icon(for: tab, isSelected: isSelected)
                     .frame(width: 24, height: 24)
 
                 Text(tab.title)
@@ -33,6 +32,24 @@ struct DiiaTabBar: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(tab.title)
+    }
+
+    @ViewBuilder
+    private func icon(for tab: DiiaTab, isSelected: Bool) -> some View {
+        switch tab.icon(selected: isSelected) {
+        case .asset(let name):
+            Image(name)
+                .renderingMode(.original)
+                .resizable()
+                .scaledToFit()
+
+        case .symbol(let name):
+            Image(systemName: name)
+                .resizable()
+                .scaledToFit()
+                .fontWeight(isSelected ? .bold : .regular)
+                .foregroundStyle(.white)
+        }
     }
 }
 

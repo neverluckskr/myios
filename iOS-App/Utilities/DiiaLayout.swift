@@ -58,4 +58,11 @@ enum DiiaLayout {
     static var photoHeight: CGFloat {
         columnWidth * docPhotoProportion
     }
+
+    /// DSTableItemVerticalView keeps the label in a row with a trailing spacer
+    /// and reserves 10% for the action button, so a label breaks earlier than
+    /// its value does.
+    static var fieldLabelWidth: CGFloat {
+        columnWidth * 0.9 - 4
+    }
 }
