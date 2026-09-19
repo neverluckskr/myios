@@ -31,3 +31,9 @@ fastlane/test_output
 # Claude
 CLAUDE.md
 .claude/
+
+# Signing keys — never commit
+*private_key*
+*.p8
+*.p12
+*.mobileprovision

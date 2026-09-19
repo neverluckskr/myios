@@ -10,7 +10,7 @@ struct DiiaTabBar: View {
             }
         }
         .frame(height: 70)
-        .background(Color.black)
+        .background(Color.black.ignoresSafeArea(edges: .bottom))
     }
 
     private func tabItem(_ tab: DiiaTab) -> some View {
@@ -25,7 +25,7 @@ struct DiiaTabBar: View {
                     .frame(width: 24, height: 24)
 
                 Text(tab.title)
-                    .font(.system(size: 10, weight: .regular))
+                    .font(DiiaFont.tabBarTitle)
                     .foregroundStyle(.white)
             }
             .frame(maxWidth: .infinity)

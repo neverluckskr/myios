@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTab: DiiaTab = .feed
+    @State private var selectedTab: DiiaTab = .documents
+    @State private var store = DocumentStore()
 
     var body: some View {
         ZStack {
@@ -9,11 +10,26 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                Spacer()
+                screen
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
                 DiiaTabBar(selectedTab: $selectedTab)
             }
         }
+        .environment(store)
         .preferredColorScheme(.light)
+    }
+
+    @ViewBuilder
+    private var screen: some View {
+        switch selectedTab {
+        case .documents:
+            DocumentsScreen(documents: store.documents)
+        case .menu:
+            MenuScreen()
+        default:
+            Color.clear
+        }
     }
 }
 

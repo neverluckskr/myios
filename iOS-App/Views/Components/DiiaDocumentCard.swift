@@ -1,0 +1,84 @@
+import SwiftUI
+
+/// design_system_code: docWithPhoto
+struct DiiaDocumentCard: View {
+    let document: DiiaDocument
+    var onMoreTapped: (() -> Void)?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(document.title)
+                .font(DiiaFont.docHeading)
+                .foregroundStyle(.black)
+                .padding(.horizontal, DiiaLayout.sideSpacing)
+                .padding(.top, DiiaLayout.verticalPadding + 8)
+
+            twoColumns
+                .padding(.horizontal, DiiaLayout.sideSpacing)
+                .padding(.top, DiiaLayout.verticalPadding)
+
+            Spacer(minLength: DiiaLayout.verticalTickerPadding)
+
+            DiiaTicker(text: document.tickerText)
+                .padding(.bottom, DiiaLayout.verticalTickerPadding)
+
+            bottomHeading
+                .padding(.horizontal, DiiaLayout.sideSpacing)
+                .padding(.bottom, DiiaLayout.bottomHeadingPadding)
+        }
+        .frame(width: DiiaLayout.cardWidth, height: DiiaLayout.cardHeight, alignment: .top)
+        .background(Color.white.opacity(0.4))
+        .clipShape(RoundedRectangle(cornerRadius: DiiaLayout.cardCornerRadius, style: .continuous))
+        .shadow(color: .white, radius: 23 / 2, y: 8)
+    }
+
+    private var twoColumns: some View {
+        HStack(alignment: .top, spacing: DiiaLayout.columnSpacing) {
+            DiiaDocPhoto(data: document.photoData)
+
+            VStack(alignment: .leading, spacing: DiiaLayout.tableVerticalSpacing) {
+                ForEach(document.fields) { field in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(field.label)
+                            .font(DiiaFont.usual)
+                            .foregroundStyle(.black)
+                        Text(field.value)
+                            .font(DiiaFont.usual)
+                            .foregroundStyle(.black)
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .frame(width: DiiaLayout.columnWidth, alignment: .leading)
+        }
+    }
+
+    private var bottomHeading: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            Text(document.fullName)
+                .font(DiiaFont.docHeading)
+                .foregroundStyle(.black)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 0)
+
+            Button {
+                onMoreTapped?()
+            } label: {
+                Image(systemName: "ellipsis")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.black))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+}
+
+#Preview {
+    ZStack {
+        DiiaGradientBackground().ignoresSafeArea()
+        DiiaDocumentCard(document: DiiaDocument.mocks[0])
+    }
+}

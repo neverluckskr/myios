@@ -18,6 +18,13 @@ targets:
       properties:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        UIAppFonts:
+          - e-Ukraine-Light.otf
+          - e-Ukraine-Regular.otf
+          - e-Ukraine-Medium.otf
+          - e-Ukraine-Bold.otf
+          - e-UkraineHead-Light.otf
+          - e-UkraineHead-Regular.otf
     settings:
       base:
         SWIFT_VERSION: 5.9
