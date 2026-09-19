@@ -7,6 +7,7 @@ struct DocumentEditScreen: View {
 
     @State private var draft: DiiaDocument
     @State private var pickedPhoto: PhotosPickerItem?
+    @State private var isConfirmingReset = false
 
     init(document: DiiaDocument) {
         _draft = State(initialValue: document)
@@ -52,13 +53,39 @@ struct DocumentEditScreen: View {
             }
 
             Section {
-                Button("Зберегти") {
-                    store.update(draft)
-                    dismiss()
+                HStack(spacing: 0) {
+                    Button("Зберегти") {
+                        store.update(draft)
+                        dismiss()
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    Divider()
+
+                    Button("Скинути", role: .destructive) {
+                        isConfirmingReset = true
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
+                .buttonStyle(.borderless)
                 .font(DiiaFont.smallHeading)
+            } footer: {
+                Text("Скидання поверне початкові дані цього документа.")
             }
+        }
+        .confirmationDialog(
+            "Скинути до початкових даних?",
+            isPresented: $isConfirmingReset,
+            titleVisibility: .visible
+        ) {
+            Button("Скинути", role: .destructive) {
+                if let fresh = store.resetToDefaults(id: draft.id) {
+                    draft = fresh
+                }
+            }
+            Button("Скасувати", role: .cancel) {}
+        } message: {
+            Text("Усі внесені зміни буде втрачено.")
         }
         .font(DiiaFont.usual)
         .scrollContentBackground(.hidden)

@@ -23,6 +23,18 @@ final class DocumentStore {
         documents[index] = document
     }
 
+    /// Restores the shipped defaults for one document, keeping its identity so
+    /// the carousel does not jump.
+    func resetToDefaults(id: UUID) -> DiiaDocument? {
+        guard let index = documents.firstIndex(where: { $0.id == id }),
+              index < DiiaDocument.mocks.count else { return nil }
+
+        var fresh = DiiaDocument.mocks[index]
+        fresh.id = id
+        documents[index] = fresh
+        return fresh
+    }
+
     private func persist() {
         guard let data = try? JSONEncoder().encode(documents) else { return }
         UserDefaults.standard.set(data, forKey: Self.storageKey)
