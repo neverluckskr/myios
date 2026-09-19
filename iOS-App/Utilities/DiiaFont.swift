@@ -71,6 +71,18 @@ enum DiiaFont {
     /// subtitleLabelMlc
     static var smallHeading: Font { main(size: scaled(big: 18, medium: 16, small: 14)) }
 
+    /// Barcode digits, verification option captions
+    static var bigText: Font { main(size: scaled(big: 16, medium: 14, small: 12)) }
+
+    /// VerificationView expiration caption
+    static var expiration: Font {
+        switch UIScreen.main.bounds.width {
+        case 414, 428, 430: main(size: 12)
+        case ...320: main(size: 9)
+        default: main(size: 11)
+        }
+    }
+
     /// docHeadingOrg title
     static var docHeading: Font {
         main(size: UIScreen.main.bounds.width < 414 ? 17 : 24)

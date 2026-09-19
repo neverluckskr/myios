@@ -23,6 +23,12 @@ struct DocumentEditScreen: View {
                     get: { draft.qrPayload ?? "" },
                     set: { draft.qrPayload = $0 }
                 ), axis: .vertical)
+
+                TextField("Номер штрихкоду", text: Binding(
+                    get: { draft.barcodeValue ?? "" },
+                    set: { draft.barcodeValue = $0 }
+                ))
+                .keyboardType(.numbersAndPunctuation)
             }
 
             Section("Поля") {
