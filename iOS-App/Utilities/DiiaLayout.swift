@@ -37,6 +37,10 @@ enum DiiaLayout {
     static let photoCornerRadius: CGFloat = 16
     static let tickerHeight: CGFloat = 24
 
+    /// ZoomAndSnapFlowLayout: cards shrink as they leave the centre.
+    static let carouselActiveDistance: CGFloat = 200
+    static let carouselZoomFactor: CGFloat = 0.12
+
     /// Visible circle of the "more" button; its tap target stays 44pt.
     static var moreButtonIconSize: CGFloat {
         switch UIScreen.main.bounds.width {

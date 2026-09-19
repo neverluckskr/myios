@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let carouselSpace = "diia.carousel"
+
 struct DocumentsScreen: View {
     let documents: [DiiaDocument]
 
@@ -12,6 +14,7 @@ struct DocumentsScreen: View {
                 LazyHStack(spacing: DiiaLayout.cardInteritemSpacing) {
                     ForEach(documents) { document in
                         card(for: document)
+                            .zoomedToCentre()
                             .id(document.id)
                     }
                 }
@@ -21,6 +24,7 @@ struct DocumentsScreen: View {
             .scrollIndicators(.hidden)
             .scrollPosition(id: $currentID)
             .safeAreaPadding(.horizontal, 2 * DiiaLayout.cardInteritemSpacing)
+            .coordinateSpace(.named(carouselSpace))
             .frame(height: DiiaLayout.cardHeight)
 
             pageDots
@@ -35,7 +39,7 @@ struct DocumentsScreen: View {
 
     private func card(for document: DiiaDocument) -> some View {
         DiiaFlipCard(progress: flippedID == document.id ? 1 : 0) {
-            DiiaDocumentCard(document: document)
+            DiiaDocumentCard(document: document, contentVisible: document.id == currentID)
         } back: {
             DiiaDocumentCardBack(document: document)
         }
@@ -44,6 +48,7 @@ struct DocumentsScreen: View {
             flippedID = flippedID == document.id ? nil : document.id
         }
         .animation(.easeInOut(duration: 0.4), value: flippedID)
+        .animation(.easeInOut(duration: 0.3), value: currentID)
     }
 
     private var pageDots: some View {
@@ -55,6 +60,28 @@ struct DocumentsScreen: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: currentID)
+    }
+}
+
+private extension View {
+    /// Port of ZoomAndSnapFlowLayout: cards scale down to 0.88 as they leave the
+    /// centre, pulled back toward the edge so the gap between them stays put.
+    func zoomedToCentre() -> some View {
+        visualEffect { content, proxy in
+            let viewportCentre = UIScreen.main.bounds.width / 2
+            let distance = viewportCentre - proxy.frame(in: .named(carouselSpace)).midX
+            let normalized = distance / DiiaLayout.carouselActiveDistance
+
+            let zoom = abs(normalized) < 1
+                ? 1 - DiiaLayout.carouselZoomFactor * abs(normalized)
+                : 1 - DiiaLayout.carouselZoomFactor
+
+            let offset = DiiaLayout.cardWidth * (1 - zoom) / 2 * (normalized > 0 ? 1 : -1)
+
+            return content
+                .scaleEffect(zoom)
+                .offset(x: offset)
+        }
     }
 }
 

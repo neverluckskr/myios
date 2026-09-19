@@ -3,6 +3,8 @@ import SwiftUI
 /// design_system_code: docWithPhoto
 struct DiiaDocumentCard: View {
     let document: DiiaDocument
+    /// Diia blanks out everything but the frosted panel while a card is off-centre.
+    var contentVisible: Bool = true
     var onMoreTapped: (() -> Void)?
 
     var body: some View {
@@ -26,6 +28,7 @@ struct DiiaDocumentCard: View {
                 .padding(.horizontal, DiiaLayout.sideSpacing)
                 .padding(.bottom, DiiaLayout.bottomHeadingPadding)
         }
+        .opacity(contentVisible ? 1 : 0)
         .frame(width: DiiaLayout.cardWidth, height: DiiaLayout.cardHeight, alignment: .top)
         .background(Color.white.opacity(0.4))
         .clipShape(RoundedRectangle(cornerRadius: DiiaLayout.cardCornerRadius, style: .continuous))
