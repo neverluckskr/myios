@@ -1,95 +1,109 @@
 import SwiftUI
 
+/// Port of Diia's `UIView.setRadialGradient()`.
+///
+/// Three elliptical radial layers over white. Each pulses its opacity between
+/// 0.6 and 1.0 through three 0.4s phases, offset from one another so the tint
+/// keeps travelling across the screen. Full cycle: 1.2s.
 struct DiiaGradientBackground: View {
-    @State private var phase: CGFloat = 0
+    private enum Phase {
+        case delay, increase, decrease
+
+        func opacity(at t: Double) -> Double {
+            switch self {
+            case .delay: Self.minAlpha
+            case .increase: Self.minAlpha + (Self.maxAlpha - Self.minAlpha) * t
+            case .decrease: Self.maxAlpha - (Self.maxAlpha - Self.minAlpha) * t
+            }
+        }
+
+        static let minAlpha = 0.6
+        static let maxAlpha = 1.0
+    }
+
+    private struct Blob {
+        let color: Color
+        /// Gradient centre as a fraction of the view's size.
+        let center: CGPoint
+        /// Radii as a fraction of the view's size, already scaled by finishLocation.
+        let radius: CGSize
+        let phases: [Phase]
+    }
+
+    private static let cycle: Double = 1.2
+
+    /// Layer order matches `insertSublayer(at: 0)`: last inserted sits at the bottom.
+    private static let blobs: [Blob] = [
+        Blob(
+            color: DiiaColors.gradientBlue,
+            center: CGPoint(x: 0, y: 0),
+            radius: CGSize(width: 1.5, height: 1.5),
+            phases: [.increase, .decrease, .delay]
+        ),
+        Blob(
+            color: DiiaColors.gradientPink,
+            center: CGPoint(x: 1, y: 0),
+            radius: CGSize(width: 1.2, height: 1.8),
+            phases: [.decrease, .delay, .increase]
+        ),
+        Blob(
+            color: DiiaColors.gradientOrange,
+            center: CGPoint(x: 1, y: 1),
+            radius: CGSize(width: 1.3, height: 1.3),
+            phases: [.delay, .increase, .decrease]
+        )
+    ]
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60)) { timeline in
-            let t = timeline.date.timeIntervalSinceReferenceDate
-            let cycle = t.truncatingRemainder(dividingBy: 3.6)
-            let normalizedPhase = cycle / 3.6
+        TimelineView(.animation) { timeline in
+            let progress = timeline.date.timeIntervalSinceReferenceDate
+                .truncatingRemainder(dividingBy: Self.cycle) / Self.cycle
 
             Canvas { context, size in
-                let w = size.width
-                let h = size.height
-
                 context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(.white))
 
-                drawBlob(
-                    in: &context,
-                    center: CGPoint(x: w, y: h),
-                    endPoint: CGPoint(x: 0, y: 0),
-                    color: DiiaColors.gradientOrange,
-                    radius: max(w, h) * 1.3,
-                    opacity: blobOpacity(normalizedPhase, phaseOffset: 0)
-                )
-
-                drawBlob(
-                    in: &context,
-                    center: CGPoint(x: w, y: 0),
-                    endPoint: CGPoint(x: 0, y: h),
-                    color: DiiaColors.gradientPink,
-                    radius: max(w, h) * 1.2,
-                    opacity: blobOpacity(normalizedPhase, phaseOffset: 1.0 / 3.0)
-                )
-
-                drawBlob(
-                    in: &context,
-                    center: CGPoint(x: 0, y: 0),
-                    endPoint: CGPoint(x: w, y: h),
-                    color: DiiaColors.gradientBlue,
-                    radius: max(w, h) * 1.0,
-                    opacity: blobOpacity(normalizedPhase, phaseOffset: 2.0 / 3.0)
-                )
+                for blob in Self.blobs {
+                    draw(blob, in: context, size: size, progress: progress)
+                }
             }
         }
     }
 
-    private func blobOpacity(_ phase: CGFloat, phaseOffset: CGFloat) -> Double {
-        let shifted = (phase + phaseOffset).truncatingRemainder(dividingBy: 1.0)
-        if shifted < 1.0 / 3.0 {
-            return 0.6
-        } else if shifted < 2.0 / 3.0 {
-            let t = (shifted - 1.0 / 3.0) / (1.0 / 3.0)
-            return 0.6 + 0.4 * t
-        } else {
-            let t = (shifted - 2.0 / 3.0) / (1.0 / 3.0)
-            return 1.0 - 0.4 * t
-        }
-    }
+    private func draw(_ blob: Blob, in context: GraphicsContext, size: CGSize, progress: Double) {
+        let slot = min(Int(progress * 3), 2)
+        let localT = progress * 3 - Double(slot)
 
-    private func drawBlob(
-        in context: inout GraphicsContext,
-        center: CGPoint,
-        endPoint: CGPoint,
-        color: Color,
-        radius: CGFloat,
-        opacity: Double
-    ) {
-        let gradient = Gradient(colors: [
-            color.opacity(0.68),
-            color.opacity(0)
-        ])
+        var layer = context
+        layer.opacity = blob.phases[slot].opacity(at: localT)
 
-        context.opacity = opacity
-        context.fill(
-            Path(ellipseIn: CGRect(
-                x: center.x - radius,
-                y: center.y - radius,
-                width: radius * 2,
-                height: radius * 2
-            )),
+        let center = CGPoint(x: blob.center.x * size.width, y: blob.center.y * size.height)
+        let radiusX = blob.radius.width * size.width
+        let radiusY = blob.radius.height * size.height
+
+        // Draw a circle of radiusX, then squash vertically into the target ellipse.
+        layer.translateBy(x: 0, y: center.y)
+        layer.scaleBy(x: 1, y: radiusY / radiusX)
+        layer.translateBy(x: 0, y: -center.y)
+
+        let rect = CGRect(
+            x: center.x - radiusX,
+            y: center.y - radiusX,
+            width: radiusX * 2,
+            height: radiusX * 2
+        )
+
+        layer.fill(
+            Path(ellipseIn: rect),
             with: .radialGradient(
-                gradient,
+                Gradient(colors: [blob.color.opacity(0.68), blob.color.opacity(0)]),
                 center: center,
                 startRadius: 0,
-                endRadius: radius
+                endRadius: radiusX
             )
         )
-        context.opacity = 1
     }
 }
 
 #Preview {
-    DiiaGradientBackground()
+    DiiaGradientBackground().ignoresSafeArea()
 }

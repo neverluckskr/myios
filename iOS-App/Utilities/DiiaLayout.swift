@@ -37,6 +37,15 @@ enum DiiaLayout {
     static let photoCornerRadius: CGFloat = 16
     static let tickerHeight: CGFloat = 24
 
+    /// Visible circle of the "more" button; its tap target stays 44pt.
+    static var moreButtonIconSize: CGFloat {
+        switch UIScreen.main.bounds.width {
+        case 414...: 31
+        case ...320: 24
+        default: 28
+        }
+    }
+
     /// Photo and fields columns are distributed equally across the card width.
     static var columnWidth: CGFloat {
         (cardWidth - 2 * sideSpacing - columnSpacing) / 2

@@ -1,7 +1,17 @@
 import SwiftUI
 import UIKit
+import CoreText
 
 enum DiiaFont {
+    /// UIAppFonts alone proved unreliable with the generated Info.plist, so the
+    /// bundled faces are also registered at launch. Re-registering is a no-op.
+    static func registerBundledFonts() {
+        let urls = Bundle.main.urls(forResourcesWithExtension: "otf", subdirectory: nil) ?? []
+        for url in urls {
+            CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+        }
+    }
+
     enum Weight {
         case light, regular, medium, bold
 

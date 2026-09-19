@@ -5,11 +5,15 @@ struct DiiaTicker: View {
     let text: String
 
     private static let leadingPadding: CGFloat = 16
-    private static let pointsPerSecond: Double = 30
 
     @State private var offset: CGFloat = 0
 
-    private var segment: String { text + "   •   " }
+    private var segment: String { text + "    " }
+
+    /// Diia scrolls one full text width in `text.count / 10` seconds.
+    private var secondsPerSegment: Double {
+        max(Double(segment.count) / 10, 1)
+    }
 
     private var segmentWidth: CGFloat {
         max((segment as NSString).size(withAttributes: [.font: DiiaFont.usualUIFont]).width, 1)
@@ -30,8 +34,8 @@ struct DiiaTicker: View {
             }
             .offset(x: Self.leadingPadding + offset)
             .frame(height: geo.size.height, alignment: .center)
-            .onAppear { startScrolling(loopWidth) }
-            .onChange(of: loopWidth) { _, width in startScrolling(width) }
+            .onAppear { startScrolling(loopWidth, copies: copies) }
+            .onChange(of: loopWidth) { _, width in startScrolling(width, copies: copies) }
         }
         .frame(height: DiiaLayout.tickerHeight)
         .background(
@@ -42,10 +46,10 @@ struct DiiaTicker: View {
         .clipped()
     }
 
-    private func startScrolling(_ width: CGFloat) {
+    private func startScrolling(_ width: CGFloat, copies: Int) {
         offset = 0
         withAnimation(
-            .linear(duration: Double(width) / Self.pointsPerSecond)
+            .linear(duration: secondsPerSegment * Double(copies))
             .repeatForever(autoreverses: false)
         ) {
             offset = -width

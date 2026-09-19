@@ -55,7 +55,8 @@ struct DiiaDocumentCard: View {
 
     private var bottomHeading: some View {
         HStack(alignment: .bottom, spacing: 8) {
-            Text(document.fullName)
+            // Diia renders each name part on its own line.
+            Text(document.fullName.replacingOccurrences(of: " ", with: "\n"))
                 .font(DiiaFont.docHeading)
                 .foregroundStyle(.black)
                 .fixedSize(horizontal: false, vertical: true)
@@ -66,10 +67,11 @@ struct DiiaDocumentCard: View {
                 onMoreTapped?()
             } label: {
                 Image(systemName: "ellipsis")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: DiiaLayout.moreButtonIconSize * 0.45, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
+                    .frame(width: DiiaLayout.moreButtonIconSize, height: DiiaLayout.moreButtonIconSize)
                     .background(Circle().fill(.black))
+                    .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
         }
