@@ -49,7 +49,12 @@ struct DiiaTicker: View {
     }
 
     private func startScrolling(_ width: CGFloat, copies: Int) {
-        offset = 0
+        // Snap back to the start outright. Left animated, the card's flip
+        // transaction drags the text rightwards into place first.
+        var reset = Transaction()
+        reset.disablesAnimations = true
+        withTransaction(reset) { offset = 0 }
+
         withAnimation(
             .linear(duration: secondsPerSegment * Double(copies))
             .repeatForever(autoreverses: false)

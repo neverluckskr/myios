@@ -22,33 +22,36 @@ struct DiiaGradientBackground: View {
     }
 
     private static let breathCycle: Double = 14
-    private static let minAlpha: Double = 0.55
+    private static let minAlpha: Double = 0.7
     private static let maxAlpha: Double = 1.0
-    private static let tint: Double = 0.95
+    private static let tint: Double = 1.0
 
+    /// Radii overlap well past the edges so no white shows through, and the
+    /// centres travel far enough that the composition keeps rearranging —
+    /// blue over orange is what produces the greens.
     private static let blobs: [Blob] = [
         Blob(
             color: DiiaColors.gradientBlue,
-            center: CGPoint(x: 0, y: 0),
-            radius: CGSize(width: 1.0, height: 1.0),
+            center: CGPoint(x: 0.15, y: 0.15),
+            radius: CGSize(width: 1.3, height: 1.3),
             phase: 0,
-            drift: CGSize(width: 0.18, height: 0.12),
+            drift: CGSize(width: 0.35, height: 0.3),
             driftPeriod: CGSize(width: 23, height: 31)
         ),
         Blob(
             color: DiiaColors.gradientPink,
-            center: CGPoint(x: 1, y: 0),
-            radius: CGSize(width: 0.85, height: 1.15),
+            center: CGPoint(x: 0.9, y: 0.1),
+            radius: CGSize(width: 1.1, height: 1.4),
             phase: 1.0 / 3.0,
-            drift: CGSize(width: 0.15, height: 0.16),
+            drift: CGSize(width: 0.3, height: 0.35),
             driftPeriod: CGSize(width: 29, height: 19)
         ),
         Blob(
             color: DiiaColors.gradientOrange,
-            center: CGPoint(x: 1, y: 1),
-            radius: CGSize(width: 0.9, height: 0.9),
+            center: CGPoint(x: 0.85, y: 0.9),
+            radius: CGSize(width: 1.25, height: 1.25),
             phase: 2.0 / 3.0,
-            drift: CGSize(width: 0.2, height: 0.14),
+            drift: CGSize(width: 0.4, height: 0.3),
             driftPeriod: CGSize(width: 17, height: 27)
         )
     ]
