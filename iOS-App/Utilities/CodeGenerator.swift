@@ -3,26 +3,25 @@ import CoreImage.CIFilterBuiltins
 
 enum CodeGenerator {
     private static let context = CIContext()
+    /// Codes are reissued periodically, so the cache is capped to stop the
+    /// retired images piling up.
+    private static let cacheLimit = 4
     private static var cache: [String: UIImage] = [:]
 
     static func qr(from string: String) -> UIImage? {
-        render(key: "qr:" + string) {
-            let filter = CIFilter.qrCodeGenerator()
-            filter.message = Data(string.utf8)
-            filter.correctionLevel = "M"
-            return filter.outputImage
-        }
-    }
+        if let cached = cache[string] { return cached }
 
-    private static func render(key: String, _ make: () -> CIImage?) -> UIImage? {
-        if let cached = cache[key] { return cached }
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = Data(string.utf8)
+        filter.correctionLevel = "M"
 
-        guard let output = make() else { return nil }
-        let upscaled = output.transformed(by: CGAffineTransform(scaleX: 12, y: 12))
+        guard let output = filter.outputImage else { return nil }
+        let upscaled = output.transformed(by: CGAffineTransform(scaleX: 8, y: 8))
         guard let cgImage = context.createCGImage(upscaled, from: upscaled.extent) else { return nil }
 
         let image = UIImage(cgImage: cgImage)
-        cache[key] = image
+        if cache.count >= cacheLimit { cache.removeAll() }
+        cache[string] = image
         return image
     }
 }
