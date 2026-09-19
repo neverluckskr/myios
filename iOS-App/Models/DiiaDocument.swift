@@ -13,6 +13,8 @@ struct DiiaDocument: Codable, Identifiable, Equatable {
     var tickerText: String
     var fields: [DiiaDocumentField]
     var photoData: Data?
+    /// Encoded on the back of the card. Falls back to a generated link when empty.
+    var qrPayload: String?
 
     static let mocks: [DiiaDocument] = [
         DiiaDocument(

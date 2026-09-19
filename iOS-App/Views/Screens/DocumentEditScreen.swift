@@ -18,6 +18,10 @@ struct DocumentEditScreen: View {
                 TextField("Назва", text: $draft.title)
                 TextField("ПІБ", text: $draft.fullName, axis: .vertical)
                 TextField("Текст бігучого рядка", text: $draft.tickerText, axis: .vertical)
+                TextField("Дані QR-коду", text: Binding(
+                    get: { draft.qrPayload ?? "" },
+                    set: { draft.qrPayload = $0 }
+                ), axis: .vertical)
             }
 
             Section("Поля") {
