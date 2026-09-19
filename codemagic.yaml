@@ -1,0 +1,83 @@
+definitions:
+  scripts:
+    - &install_xcodegen
+      name: Install XcodeGen
+      script: brew install xcodegen
+
+    - &generate_project
+      name: Generate Xcode project
+      script: xcodegen generate
+
+    - &code_signing
+      name: Set up code signing
+      script: |
+        keychain initialize
+        app-store-connect fetch-signing-files "morty.diia" \
+          --type IOS_APP_STORE \
+          --strict-match-identifier \
+          --create
+        keychain add-certificates
+        xcode-project use-profiles
+
+    - &build_ipa
+      name: Build IPA
+      script: |
+        xcode-project build-ipa \
+          --project iOS-App.xcodeproj \
+          --scheme iOS-App \
+          --config Release \
+          --archive-xcargs "ONLY_ACTIVE_ARCH=NO SWIFT_STRICT_CONCURRENCY=minimal CURRENT_PROJECT_VERSION=$PROJECT_BUILD_NUMBER"
+
+  environment: &base_environment
+    groups:
+      - signing
+    xcode: "26.0"
+
+workflows:
+  ios-testflight:
+    name: Build & Upload to TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+
+    integrations:
+      app_store_connect: Codemagic
+
+    environment: *base_environment
+
+    scripts:
+      - *install_xcodegen
+      - *generate_project
+      - *code_signing
+      - *build_ipa
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+
+  ios-internal:
+    name: Build & Upload (internal only)
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+
+    integrations:
+      app_store_connect: Codemagic
+
+    environment: *base_environment
+
+    scripts:
+      - *install_xcodegen
+      - *generate_project
+      - *code_signing
+      - *build_ipa
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: false
