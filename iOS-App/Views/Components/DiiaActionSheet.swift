@@ -84,8 +84,6 @@ struct DiiaActionSheet: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .disabled(action.handler == nil)
-        .opacity(action.handler == nil ? 0.4 : 1)
     }
 }
 
