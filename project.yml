@@ -20,9 +20,6 @@ targets:
           - UIInterfaceOrientationPortrait
     entitlements:
       path: iOS-App.entitlements
-      properties:
-        com.apple.developer.applesignin:
-          - Default
     settings:
       base:
         SWIFT_VERSION: 5.9
