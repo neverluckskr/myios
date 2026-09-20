@@ -15,7 +15,7 @@ struct DocumentEditScreen: View {
 
     var body: some View {
         ZStack {
-            DiiaGradientBackground().ignoresSafeArea()
+            FormPalette.canvas.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 16) {
@@ -27,7 +27,10 @@ struct DocumentEditScreen: View {
                         detailsSection
                     }
 
-                    resetButton
+                    DiiaFormButton(title: "Скинути до початкових даних", destructive: true) {
+                        isConfirmingReset = true
+                    }
+                    .padding(.top, 8)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
@@ -38,7 +41,6 @@ struct DocumentEditScreen: View {
         }
         .navigationTitle(draft.title)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.hidden, for: .navigationBar)
         .confirmationDialog(
             "Скинути до початкових даних?",
             isPresented: $isConfirmingReset,
@@ -87,33 +89,28 @@ struct DocumentEditScreen: View {
     private var photoSection: some View {
         DiiaFormSection(title: "Фото", icon: "person.crop.square") {
             HStack(alignment: .top, spacing: 16) {
-                DiiaDocPhoto(data: draft.photoData, width: 96)
+                DiiaDocPhoto(data: draft.photoData, width: 104)
 
-                VStack(alignment: .leading, spacing: 10) {
+                VStack(spacing: 10) {
                     PhotosPicker(selection: $pickedPhoto, matching: .images) {
-                        Label(draft.photoData == nil ? "Обрати фото" : "Замінити", systemImage: "photo")
-                            .font(DiiaFont.bigText)
-                            .foregroundStyle(.black)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color.white.opacity(0.75))
-                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        HStack(spacing: 8) {
+                            Image(systemName: "photo")
+                                .font(.system(size: 15, weight: .medium))
+                            Text(draft.photoData == nil ? "Обрати" : "Замінити")
+                                .font(.system(size: 17))
+                        }
+                        .foregroundStyle(.black)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(FormPalette.inputIdle)
+                        .clipShape(Capsule())
                     }
 
                     if draft.photoData != nil {
-                        Button {
+                        DiiaFormButton(title: "Прибрати", icon: "trash", destructive: true) {
                             draft.photoData = nil
                             pickedPhoto = nil
-                        } label: {
-                            Label("Прибрати", systemImage: "trash")
-                                .font(DiiaFont.bigText)
-                                .foregroundStyle(.red)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .background(Color.white.opacity(0.75))
-                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         }
-                        .buttonStyle(.plain)
                     }
 
                     Spacer(minLength: 0)
@@ -125,20 +122,23 @@ struct DocumentEditScreen: View {
     private var fieldsSection: some View {
         DiiaFormSection(title: "Поля на картці", icon: "list.bullet") {
             ForEach($draft.fields) { $field in
-                VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 14) {
                     HStack {
                         Text("Поле \((draft.fields.firstIndex(where: { $0.id == field.id }) ?? 0) + 1)")
-                            .font(DiiaFont.smallTitle)
-                            .foregroundStyle(DiiaColors.secondaryText)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(FormPalette.caption)
 
                         Spacer()
 
                         Button {
                             draft.fields.removeAll { $0.id == field.id }
                         } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 18))
-                                .foregroundStyle(Color.black.opacity(0.25))
+                            Image(systemName: "xmark")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(.black)
+                                .frame(width: 28, height: 28)
+                                .background(FormPalette.inputIdle)
+                                .clipShape(Circle())
                         }
                         .buttonStyle(.plain)
                     }
@@ -147,21 +147,12 @@ struct DocumentEditScreen: View {
                     DiiaFormField(title: "Підпис англійською", text: optional($field.latinLabel))
                     DiiaFormField(title: "Значення", text: $field.value)
                 }
-                .padding(.bottom, 4)
+                .padding(.bottom, 6)
             }
 
-            Button {
+            DiiaFormButton(title: "Додати поле", icon: "plus") {
                 draft.fields.append(DiiaDocumentField(label: "", value: ""))
-            } label: {
-                Label("Додати поле", systemImage: "plus")
-                    .font(DiiaFont.bigText)
-                    .foregroundStyle(.black)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Color.white.opacity(0.75))
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
-            .buttonStyle(.plain)
         }
     }
 
@@ -177,36 +168,13 @@ struct DocumentEditScreen: View {
         }
     }
 
-    private var resetButton: some View {
-        Button(role: .destructive) {
-            isConfirmingReset = true
-        } label: {
-            Text("Скинути до початкових даних")
-                .font(DiiaFont.bigText)
-                .foregroundStyle(.red)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-        }
-        .buttonStyle(.plain)
-    }
-
     private var saveBar: some View {
-        Button {
+        DiiaFormButton(title: "Зберегти", filled: true) {
             store.update(draft)
             dismiss()
-        } label: {
-            Text("Зберегти")
-                .font(DiiaFont.smallHeading)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(Color.black)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
-        .buttonStyle(.plain)
         .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
+        .padding(.vertical, 10)
         .background(.ultraThinMaterial)
     }
 
