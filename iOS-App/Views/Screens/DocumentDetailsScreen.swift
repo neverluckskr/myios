@@ -39,6 +39,13 @@ struct DocumentDetailsScreen: View {
         .background(DiiaColors.detailsBackground)
     }
 
+    /// With details present the later blocks carry the rest, so this column
+    /// shows only the leading field — the original keeps just the birth date
+    /// beside the photo.
+    private var identityFields: [DiiaDocumentField] {
+        document.details == nil ? document.fields : Array(document.fields.prefix(1))
+    }
+
     // MARK: - Blocks
 
     private var identityBlock: some View {
@@ -61,7 +68,7 @@ struct DocumentDetailsScreen: View {
                     DiiaDocPhoto(data: document.photoData, width: DiiaLayout.detailsColumnWidth)
 
                     VStack(alignment: .leading, spacing: 16) {
-                        ForEach(document.fields) { field in
+                        ForEach(identityFields) { field in
                             VerticalItem(
                                 label: field.label,
                                 latin: field.latinLabel,
