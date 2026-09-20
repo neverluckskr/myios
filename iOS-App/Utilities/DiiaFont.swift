@@ -74,6 +74,9 @@ enum DiiaFont {
     /// FontBook.docHeadingFont — the uppercase name on a document
     static var documentName: Font { main(size: scaled(big: 21, medium: 19, small: 17)) }
 
+    /// FontBook.smallTitle — the caption above an input
+    static var smallTitle: Font { main(size: scaled(big: 11, medium: 9, small: 8)) }
+
     /// Action sheet rows
     static var bigText: Font { main(size: scaled(big: 16, medium: 14, small: 12)) }
 
