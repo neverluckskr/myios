@@ -71,6 +71,9 @@ enum DiiaFont {
     /// subtitleLabelMlc
     static var smallHeading: Font { main(size: scaled(big: 18, medium: 16, small: 14)) }
 
+    /// FontBook.docHeadingFont — the uppercase name on a document
+    static var documentName: Font { main(size: scaled(big: 21, medium: 19, small: 17)) }
+
     /// Action sheet rows
     static var bigText: Font { main(size: scaled(big: 16, medium: 14, small: 12)) }
 

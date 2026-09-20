@@ -53,12 +53,12 @@ struct DocumentDetailsScreen: View {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(document.fullName)
-                        .font(DiiaFont.main(.bold, size: 19))
+                        .font(DiiaFont.documentName)
                         .foregroundStyle(.black)
 
                     if let latin = document.details?.latinName, !latin.isEmpty {
                         Text(latin)
-                            .font(DiiaFont.main(.bold, size: 14))
+                            .font(DiiaFont.bigText)
                             .foregroundStyle(DiiaColors.secondaryText)
                     }
                 }
@@ -72,7 +72,8 @@ struct DocumentDetailsScreen: View {
                             VerticalItem(
                                 label: field.label,
                                 latin: field.latinLabel,
-                                value: field.value
+                                value: field.value,
+                                labelWidth: DiiaLayout.detailsLabelWidth
                             )
                         }
                     }
@@ -144,16 +145,23 @@ private struct InfoBlock<Content: View>: View {
 }
 
 /// design_system_code: tableItemVerticalMlc
+///
+/// The label sits in a row with a trailing spacer and reserved action-button
+/// space, so it breaks earlier than its value — which is how "Дата
+/// народження:" lands on two lines.
 private struct VerticalItem: View {
     let label: String
     let latin: String?
     let value: String
+    /// nil lets the label use the full width, as the wider blocks do.
+    var labelWidth: CGFloat?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(DiiaFont.bigText)
                 .foregroundStyle(.black)
+                .frame(width: labelWidth, alignment: .leading)
 
             if let latin, !latin.isEmpty {
                 Text(latin)

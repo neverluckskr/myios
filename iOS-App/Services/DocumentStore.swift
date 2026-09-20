@@ -35,6 +35,26 @@ final class DocumentStore {
         return fresh
     }
 
+    /// Writes the whole set, photos included, to a file the share sheet can
+    /// hand off — so a reset or a reinstall no longer means retyping.
+    func writeBackup() throws -> URL {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("morty-documents.json")
+        try encoder.encode(documents).write(to: url, options: .atomic)
+        return url
+    }
+
+    func restoreBackup(from url: URL) throws {
+        let needsRelease = url.startAccessingSecurityScopedResource()
+        defer { if needsRelease { url.stopAccessingSecurityScopedResource() } }
+
+        let data = try Data(contentsOf: url)
+        documents = try JSONDecoder().decode([DiiaDocument].self, from: data)
+    }
+
     private func persist() {
         guard let data = try? JSONEncoder().encode(documents) else { return }
         UserDefaults.standard.set(data, forKey: Self.storageKey)

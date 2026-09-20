@@ -42,6 +42,10 @@ enum DiiaLayout {
         UIScreen.main.bounds.width - 2 * sideSpacing - 2 * sideSpacing
     }
 
+    static var detailsLabelWidth: CGFloat {
+        detailsColumnWidth * 0.9 - 4
+    }
+
     static var detailsColumnWidth: CGFloat {
         (detailsBlockWidth - columnSpacing) / 2
     }
