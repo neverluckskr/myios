@@ -6,15 +6,18 @@ struct DocumentDetailsScreen: View {
 
     private static let blockSpacing: CGFloat = 16
     private static let sidePadding: CGFloat = 16
+    /// Clears the sheet's drag indicator before the title starts.
+    private static let titleTopPadding: CGFloat = 40
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
                 Text(document.title)
-                    .font(DiiaFont.main(size: 21))
+                    .font(DiiaFont.main(size: 19))
                     .foregroundStyle(.black)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 24)
+                    .padding(.top, Self.titleTopPadding)
                     .padding(.bottom, 24)
 
                 DiiaTicker(text: document.tickerText)
@@ -54,16 +57,19 @@ struct DocumentDetailsScreen: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
 
-                HStack(alignment: .top, spacing: 20) {
-                    DiiaDocPhoto(data: document.photoData)
+                HStack(alignment: .top, spacing: DiiaLayout.columnSpacing) {
+                    DiiaDocPhoto(data: document.photoData, width: DiiaLayout.detailsColumnWidth)
 
                     VStack(alignment: .leading, spacing: 16) {
                         ForEach(document.fields) { field in
-                            VerticalItem(label: field.label, latin: nil, value: field.value)
+                            VerticalItem(
+                                label: field.label,
+                                latin: field.latinLabel,
+                                value: field.value
+                            )
                         }
                     }
-
-                    Spacer(minLength: 0)
+                    .frame(width: DiiaLayout.detailsColumnWidth, alignment: .leading)
                 }
             }
         }
@@ -108,7 +114,7 @@ struct DocumentDetailsScreen: View {
 
     private var qrBlock: some View {
         InfoBlock {
-            DocumentQRCode(document: document)
+            DocumentQRCode(document: document, side: DiiaLayout.detailsBlockWidth)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
         }

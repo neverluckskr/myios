@@ -2,6 +2,8 @@ import SwiftUI
 
 struct DiiaDocPhoto: View {
     let data: Data?
+    /// Defaults to the card's column; the details sheet passes its own.
+    var width: CGFloat = DiiaLayout.columnWidth
 
     var body: some View {
         RoundedRectangle(cornerRadius: DiiaLayout.photoCornerRadius, style: .continuous)
@@ -15,7 +17,7 @@ struct DiiaDocPhoto: View {
                     Image(systemName: "person.fill")
                         .resizable()
                         .scaledToFit()
-                        .padding(DiiaLayout.columnWidth * 0.22)
+                        .padding(width * 0.22)
                         .foregroundStyle(Color.black.opacity(0.18))
                 }
             }
@@ -24,7 +26,7 @@ struct DiiaDocPhoto: View {
                 RoundedRectangle(cornerRadius: DiiaLayout.photoCornerRadius, style: .continuous)
                     .strokeBorder(Color.black.opacity(0.1), lineWidth: 1)
             }
-            .frame(width: DiiaLayout.columnWidth, height: DiiaLayout.photoHeight)
+            .frame(width: width, height: width * DiiaLayout.docPhotoProportion)
     }
 }
 

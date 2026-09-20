@@ -41,6 +41,10 @@ struct DocumentEditScreen: View {
                     VStack(alignment: .leading, spacing: 8) {
                         TextField("Підпис", text: $field.label)
                         TextField("Значення", text: $field.value)
+                        TextField("Підпис англійською", text: Binding(
+                            get: { field.latinLabel ?? "" },
+                            set: { field.latinLabel = $0 }
+                        ))
                     }
                     .padding(.vertical, 4)
                 }

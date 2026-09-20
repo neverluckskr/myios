@@ -37,6 +37,15 @@ enum DiiaLayout {
     static let photoCornerRadius: CGFloat = 16
     static let tickerHeight: CGFloat = 24
 
+    /// The details sheet lays columns out inside a block, not inside the card.
+    static var detailsBlockWidth: CGFloat {
+        UIScreen.main.bounds.width - 2 * sideSpacing - 2 * sideSpacing
+    }
+
+    static var detailsColumnWidth: CGFloat {
+        (detailsBlockWidth - columnSpacing) / 2
+    }
+
     /// ZoomAndSnapFlowLayout: cards shrink as they leave the centre.
     static let carouselActiveDistance: CGFloat = 200
     static let carouselZoomFactor: CGFloat = 0.12

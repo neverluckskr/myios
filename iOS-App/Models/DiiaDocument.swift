@@ -4,6 +4,8 @@ struct DiiaDocumentField: Codable, Identifiable, Equatable {
     var id = UUID()
     var label: String
     var value: String
+    /// Shown greyed under the label on the full-information sheet only.
+    var latinLabel: String?
 }
 
 /// Extra data shown only on the full-information sheet. Everything here is
@@ -43,8 +45,8 @@ struct DiiaDocument: Codable, Identifiable, Equatable {
             fullName: "ШЕВЧЕНКО ТАРАС ГРИГОРОВИЧ",
             tickerText: wartimeTicker,
             fields: [
-                DiiaDocumentField(label: "Дата народження:", value: "09.03.1814"),
-                DiiaDocumentField(label: "РНОКПП:", value: "1234567890")
+                DiiaDocumentField(label: "Дата народження:", value: "09.03.1814", latinLabel: "Date of birth"),
+                DiiaDocumentField(label: "РНОКПП:", value: "1234567890", latinLabel: "Tax number")
             ],
             details: DiiaDocumentDetails(
                 latinName: "SHEVCHENKO TARAS",
